@@ -1,0 +1,6 @@
+/target/
+/.settings/
+*.wav
+*.ogg
+*.mp3
+/el90-pattern-editor/externalLib/*
