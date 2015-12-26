@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.main;
+package de.syslord.electonePattern.main_OLD;
 
 import java.awt.Color;
 import java.awt.Graphics;

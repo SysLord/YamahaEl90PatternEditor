@@ -46,7 +46,12 @@ public class TrackPattern {
 	}
 
 	public Volume getVolume(int count) {
-		return countVolumes.get(Measure.of(count));
+		Volume volume = countVolumes.get(Measure.of(count));
+		// TODO REM
+		// if (volume == null) {
+		// throw new RuntimeException(String.format("Measure: %d wurde nicht gefunden.", count));
+		// }
+		return volume;
 	}
 
 	@Override

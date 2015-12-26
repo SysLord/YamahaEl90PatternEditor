@@ -32,11 +32,11 @@ public class LogUtil {
 		logger.log(Level.WARN, String.format(format, arg));
 	}
 
-	public static void log(Object dump, String description) {
+	public static void logDump(Object dump, String description) {
 		logger.log(Level.INFO, formatDump(dump, description));
 	}
 
-	public static void logDebug(Object dump, String description) {
+	public static void logDebugDump(Object dump, String description) {
 		logger.log(Level.DEBUG, formatDump(dump, description));
 	}
 

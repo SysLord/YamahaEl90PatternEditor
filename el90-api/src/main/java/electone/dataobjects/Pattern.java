@@ -53,6 +53,7 @@ public class Pattern {
 				.mapToLong(i -> i)
 				.sum();
 	}
+
 	// public static Pattern createEmptyPattern() {
 	// Pattern pattern = new Pattern();
 	//
@@ -68,4 +69,8 @@ public class Pattern {
 	//
 	// return pattern;
 	// }
+
+	public List<TrackPattern> getTrackPatterns() {
+		return trackPatterns;
+	}
 }

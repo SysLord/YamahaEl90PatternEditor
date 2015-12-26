@@ -32,7 +32,7 @@ public class ParserMainImpl implements ParserMain {
 		ParserMainImpl parserMain = new ParserMainImpl();
 		Patterns ps = parserMain.parsePatternsFromFile(b00path);
 
-		LogUtil.log(ps, "===== RESULT =====");
+		LogUtil.logDump(ps, "===== RESULT =====");
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ParserMainImpl implements ParserMain {
 		B00Parser parser = new B00Parser();
 		B00Data b00Data = parser.parse(binaryData);
 
-		LogUtil.logDebug(b00Data, "B00 object");
+		LogUtil.logDebugDump(b00Data, "B00 object");
 
 		PatternConverter converter = new PatternConverter();
 

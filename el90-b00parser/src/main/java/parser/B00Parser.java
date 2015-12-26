@@ -184,12 +184,12 @@ public class B00Parser {
 	 * end marker: 0xFF;
 	 */
 	private List<B00Measure> parseMeasures(BinaryData rawMeasures) {
-		LogUtil.logDebug(rawMeasures, "rawMeasures");
+		LogUtil.logDebugDump(rawMeasures, "rawMeasures");
 
 		Condition isMeasureData = x -> (x & Constants.PATTERN_MEASURES_IS_MEASURE_MASK) > 0;
 		List<BinaryData> measuresAndInstrumentsList = rawMeasures.chunksStartingWith(isMeasureData);
 
-		LogUtil.logDebug(measuresAndInstrumentsList, "rawMeasures splitted");
+		LogUtil.logDebugDump(measuresAndInstrumentsList, "rawMeasures splitted");
 
 		List<B00Measure> measures = Lists.newArrayList();
 		for (BinaryData measureByteAndInstrumentsBytes : measuresAndInstrumentsList) {
@@ -216,6 +216,7 @@ public class B00Parser {
 		}
 
 		int rawMeasure = measureByteAndInstrumentsBytes.get(0);
+		// TODO make sure &0x7f is not needed
 		// int measure24s = (rawMeasure & 0x7F) - 0x80;
 		int measure24s = rawMeasure - 0x80;
 		// TODO measure sanity check
@@ -223,7 +224,8 @@ public class B00Parser {
 		for (int i = 1; i < measureByteAndInstrumentsBytes.size(); i++) {
 			int ChannelAndAccent = measureByteAndInstrumentsBytes.get(i);
 			int channel = ChannelAndAccent & Constants.PATTERN_NOTE_CHANNEL_MASK;
-			int accent = ChannelAndAccent & Constants.PATTERN_NOTE_ACCENT_MASK;
+			int accent = (ChannelAndAccent & Constants.PATTERN_NOTE_ACCENT_MASK) >>> Constants.PATTERN_NOTE_ACCENT_SHIFT_RIGHT;
+			ByteUtil.assertValueRange(accent, 0, 7);
 			measure.addNote(channel, accent);
 		}
 

@@ -7,6 +7,9 @@ public class Volume {
 	private int volume;
 
 	public Volume(int volume) {
+		if (volume < 0 || volume > 7) {
+			throw new IllegalArgumentException(String.format("Volume out of range: %d < %d < %d", 0, volume, 7));
+		}
 		this.volume = volume;
 	}
 
@@ -30,6 +33,9 @@ public class Volume {
 		return volume > 0;
 	}
 
+	/**
+	 * @return 0.0 to 1.0
+	 */
 	public float getRelative() {
 		return volume / (float) MAX_VOLUME;
 	}

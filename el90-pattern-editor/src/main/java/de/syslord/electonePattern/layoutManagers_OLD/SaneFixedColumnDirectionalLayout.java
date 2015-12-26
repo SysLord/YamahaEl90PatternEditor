@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.layoutManagers;
+package de.syslord.electonePattern.layoutManagers_OLD;
 
 import java.awt.Component;
 import java.util.List;

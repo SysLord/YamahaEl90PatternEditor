@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.layoutManagers;
+package de.syslord.electonePattern.layoutManagers_OLD;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -46,7 +46,6 @@ public abstract class SaneDirectionalLayout extends SaneLayout {
 			offset += componentSize;
 		}
 
-		// TODO
 		if (maxSize != offset) {
 			throw new RuntimeException("FAIL");
 		}

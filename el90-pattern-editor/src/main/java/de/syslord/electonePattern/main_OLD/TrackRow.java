@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.main;
+package de.syslord.electonePattern.main_OLD;
 
 import java.awt.Color;
 import java.awt.LayoutManager;
@@ -9,9 +9,9 @@ import javax.swing.JPanel;
 
 import com.google.common.collect.Lists;
 
-import de.syslord.electonePattern.layoutManagers.SaneFixedColumnHorizontalLayout;
-import de.syslord.electonePattern.layoutManagers.SaneFullLayout;
-import de.syslord.electonePattern.layoutManagers.SaneHorizontalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneFixedColumnHorizontalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneFullLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneHorizontalLayout;
 import electone.dataobjects.PatternConstants;
 import electone.dataobjects.TrackPattern;
 

@@ -89,7 +89,7 @@ public class BinaryData {
 	 * Does nothing meaningful. Logs the value with its name.
 	 */
 	public void nameValue(int index, String valueName) {
-		LogUtil.log(data.get(index), valueName);
+		LogUtil.logDump(data.get(index), valueName);
 	}
 
 	public void assertMinSize(int minSize) {

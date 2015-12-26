@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum CountQuantization {
 
-	WHOLE(1), HALF(2), QUARTER(4), EIGHTH(8), SIXTEENTH(16), THIRDS(3), TWENTYFORTH(24);
+	WHOLE(1), HALF(2), QUARTER(4), EIGHTH(8), SIXTEENTH(16), THIRDS(3 * 4), TWENTYFORTH(24 * 4);
 
 	private int countsPerBar;
 
@@ -27,7 +27,7 @@ public enum CountQuantization {
 	}
 
 	private static boolean isValidQuantization(CountQuantization quantization, List<Integer> measures) {
-		int validCountsFactor = 4 * TWENTYFORTH.getCountsPerBar() / quantization.getCountsPerBar();
+		int validCountsFactor = TWENTYFORTH.getCountsPerBar() / quantization.getCountsPerBar();
 		return measures.stream()
 				.allMatch(measure -> measure % validCountsFactor == 0);
 	}

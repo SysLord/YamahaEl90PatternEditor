@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.main;
+package de.syslord.electonePattern.main_OLD;
 
 import electone.dataobjects.Pattern;
 

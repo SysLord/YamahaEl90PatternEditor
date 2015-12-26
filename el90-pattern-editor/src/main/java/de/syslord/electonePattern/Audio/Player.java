@@ -4,14 +4,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import electone.constants.DrumInstrument;
-import electone.dataobjects.Instrument;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternConstants;
 import electone.dataobjects.Volume;
 
 public class Player {
-
-	private static final int MAX_PARALLEL_SOURCES = 250;
 
 	private static final int MINUTE_SECONDS = 60;
 
@@ -29,13 +26,10 @@ public class Player {
 
 	}
 
-	// TODO pattern constants as fields, set in CTOR
-
 	public Player(PlayerPositionListener listener) {
 		this.listener = listener;
-		Map<Instrument, String> audioFiles = SoundLibrary.getAudioFiles();
-		audioSource = new AudioSource(MAX_PARALLEL_SOURCES);
-		audioSource.init(audioFiles);
+		audioSource = new AudioSource();
+		audioSource.init(SoundLibrary.getAudioFiles());
 	}
 
 	public void setModel(Pattern model) {
@@ -46,7 +40,7 @@ public class Player {
 		this.playing = false;
 	}
 
-	// TODO setBpm als zustand
+	// TODO Bpm als property
 	public void start(int beatsPerMinute) {
 		if (playing) {
 			return;
@@ -99,5 +93,9 @@ public class Player {
 			Volume volume = entry.getValue();
 			audioSource.play(instrument, volume.getRelative());
 		}
+	}
+
+	public AudioSource getAudioSource() {
+		return audioSource;
 	}
 }

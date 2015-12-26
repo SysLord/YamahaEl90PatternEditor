@@ -1,4 +1,4 @@
-package de.syslord.electonePattern.main;
+package de.syslord.electonePattern.main_OLD;
 
 import java.awt.Component;
 import java.awt.Label;
@@ -12,10 +12,10 @@ import javax.swing.JPanel;
 
 import com.google.common.collect.Lists;
 
-import de.syslord.electonePattern.layoutManagers.SaneFixedColumnHorizontalLayout;
-import de.syslord.electonePattern.layoutManagers.SaneFixedColumnVerticalLayout;
-import de.syslord.electonePattern.layoutManagers.SaneHorizontalLayout;
-import de.syslord.electonePattern.layoutManagers.SaneVerticalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneFixedColumnHorizontalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneFixedColumnVerticalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneHorizontalLayout;
+import de.syslord.electonePattern.layoutManagers_OLD.SaneVerticalLayout;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternConstants;
 import electone.dataobjects.TrackPattern;
