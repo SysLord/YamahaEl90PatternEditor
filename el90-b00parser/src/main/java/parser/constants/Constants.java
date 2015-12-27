@@ -22,7 +22,13 @@ public interface Constants {
 	int ALL_PATTERNS_COUNT = PATTERNS_COUNT * ALL_VARIATIONS_PER_PATTERN;
 	int PATTERN_LENGTH = ALL_PATTERNS_COUNT * SINGLE_PATTERN_LENGTH;
 
-	int PATTERN_WEIRD_GAP = 0x28;
+	// TODO test if gap still present, or was bug from older parser.
+	// Length is 40, so this could match 5 variations * 8 patterns.
+	int PATTERN_UNKNOWN_WEIRD_GAP = 0x28;
+
+	// TODO unknown why there is this offset
+	int PATTERN_UNKNOWN_OFFSET_BY_2 = 2;
+
 	int PATTERN_END_GAP = 2;
 	int PATTERN_MEASURE_END = 0xFF;
 
@@ -34,9 +40,5 @@ public interface Constants {
 	/*  */
 
 	int BULK_DUMP_BLOCK_HEADER_LENGTH = 6;
-
-	/*  */
-	int QUARTER_QUANTIZATION = 24;
-	int MAX_QUARTERS_PER_BAR = 4;
 
 }

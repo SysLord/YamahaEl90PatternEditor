@@ -9,49 +9,56 @@ public class B00Pattern {
 
 	private PatternIdent patternIdent;
 
-	private int measureCount;
+	private int quarterTime;
 
 	private BinaryData channelInstruments;
 
-	private int offsetMeasure1;
+	private int offsetMeasureBar1;
 
-	private int offsetMeasure2;
+	private int offsetMeasureBar2;
 
-	private List<B00Measure> parsedMeasures1;
+	private List<B00Measure> parsedMeasuresBar1;
 
-	private List<B00Measure> parsedMeasures2;
+	private List<B00Measure> parsedMeasuresBar2;
 
-	public B00Pattern(PatternIdent patternIdent, int measureCount, BinaryData channelInstruments, int offsetMeasure1,
+	public B00Pattern(PatternIdent patternIdent, int quarterTime, BinaryData channelInstruments, int offsetMeasure1,
 			int offsetMeasure2) {
 		this.patternIdent = patternIdent;
-		this.measureCount = measureCount;
+		this.quarterTime = quarterTime;
 		this.channelInstruments = channelInstruments;
-		this.offsetMeasure1 = offsetMeasure1;
-		this.offsetMeasure2 = offsetMeasure2;
+		this.offsetMeasureBar1 = offsetMeasure1;
+		this.offsetMeasureBar2 = offsetMeasure2;
 	}
 
 	@Override
 	public String toString() {
-		// TODO what a mess...
-		String instruments = HexPrintUtil.getHumandReadable(channelInstruments.getData());
-		String format = String.format("pattern %s\n" + "measures %d\noffsets %d %d\n" + "channelInstruments\n" + "%s",
-				patternIdent, measureCount, offsetMeasure1, offsetMeasure2, instruments);
+		StringBuilder builder = new StringBuilder();
 
-		// String collect = channelInstruments.getData().stream()
-		// .map(x -> DrumInstrument.getName(x))
-		// .collect(Collectors.joining(", "));
+		builder.append("Dump B00Pattern: " + patternIdent + "\n");
+		builder.append(HexPrintUtil.getHumandReadable(channelInstruments.getData()));
 
-		String measu = String.format("measures1:\n%s\nmeasures2\n%s\n", parsedMeasures1.toString(),
-				parsedMeasures2.toString());
-		return format + "\n" + "\n" + measu;
-	}
+		builder.append("\n");
+		builder.append("Time: " + quarterTime + "/4");
 
-	// TODO REMOVE later - debugging
-	public String debugPrintparsed() {
-		StringBuilder debugPrint = debugPrint(parsedMeasures1);
-		StringBuilder debugPrint2 = debugPrint(parsedMeasures2);
+		builder.append("\n");
+		builder.append("measures offsets: " + offsetMeasureBar1 + " " + offsetMeasureBar2);
 
-		return patternIdent.toString() + "\n" + debugPrint.toString() + "\n" + debugPrint2.toString();
+		builder.append("\n");
+		builder.append("Measures1:\n");
+		builder.append(parsedMeasuresBar1.toString());
+		builder.append("\n");
+		builder.append("Measures2:\n");
+		builder.append(parsedMeasuresBar2.toString());
+
+		builder.append("\n");
+		builder.append("Different dumpformat:");
+		builder.append("\n");
+		builder.append(debugPrint(parsedMeasuresBar1).toString());
+		builder.append("\n");
+		builder.append(debugPrint(parsedMeasuresBar2).toString());
+		builder.append("\n");
+
+		return builder.toString();
 	}
 
 	private StringBuilder debugPrint(List<B00Measure> pp) {
@@ -81,32 +88,28 @@ public class B00Pattern {
 		return patternIdent;
 	}
 
-	public int getMeasures() {
-		return measureCount;
-	}
-
 	public int getOffsetMeasure1() {
-		return offsetMeasure1;
+		return offsetMeasureBar1;
 	}
 
 	public int getOffsetMeasure2() {
-		return offsetMeasure2;
+		return offsetMeasureBar2;
 	}
 
 	public void setMeasures1(List<B00Measure> parsedMeasures1) {
-		this.parsedMeasures1 = parsedMeasures1;
+		this.parsedMeasuresBar1 = parsedMeasures1;
 	}
 
 	public void setMeasures2(List<B00Measure> parsedMeasures2) {
-		this.parsedMeasures2 = parsedMeasures2;
+		this.parsedMeasuresBar2 = parsedMeasures2;
 	}
 
 	public List<B00Measure> getParsedMeasures1() {
-		return parsedMeasures1;
+		return parsedMeasuresBar1;
 	}
 
 	public List<B00Measure> getParsedMeasures2() {
-		return parsedMeasures2;
+		return parsedMeasuresBar2;
 	}
 
 	public List<Integer> getInstrumentsIds() {

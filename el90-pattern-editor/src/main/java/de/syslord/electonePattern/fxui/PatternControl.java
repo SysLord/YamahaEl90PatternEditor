@@ -1,25 +1,31 @@
 package de.syslord.electonePattern.fxui;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.VBox;
+
+import electone.dataobjects.Pattern;
+import electone.dataobjects.Track;
 
 public class PatternControl extends VBox {
 
-	private PatternModel pattern;
 	private IntegerProperty highlightProperty = new SimpleIntegerProperty(0);
 
-	public PatternControl(PatternModel pattern) {
-		this.pattern = pattern;
-		initControls();
+	private ObjectProperty<Pattern> patternProperty = new SimpleObjectProperty<>(this, "pattern", null);
+
+	public PatternControl() {
+		patternProperty.addListener((x, y, z) -> initControls());
 	}
 
 	private void initControls() {
 		this.getChildren().clear();
 
+		Pattern pattern = patternProperty.get();
 		int controlsCount = pattern.getTracks().size();
 
-		for (TrackModel track : pattern.getTracks()) {
+		for (Track track : pattern.getTracks()) {
 			TrackControl trackControl = new TrackControl(track);
 			// HighlightableTrackControl trackControl = new HighlightableTrackControl(track);
 			trackControl.maxHeightProperty().bind(this.heightProperty().divide(controlsCount));
@@ -36,5 +42,9 @@ public class PatternControl extends VBox {
 
 	public IntegerProperty highlightProperty() {
 		return highlightProperty;
+	}
+
+	public ObjectProperty<Pattern> patternProperty() {
+		return patternProperty;
 	}
 }

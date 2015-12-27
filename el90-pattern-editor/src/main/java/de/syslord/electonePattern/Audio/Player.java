@@ -83,7 +83,7 @@ public class Player {
 	}
 
 	private void playCount(int position) {
-		Map<DrumInstrument, Volume> map = model.getCount(position);
+		Map<DrumInstrument, Volume> map = model.getNotes(position);
 		for (Entry<DrumInstrument, Volume> entry : map.entrySet()) {
 			if (!playing) {
 				return;

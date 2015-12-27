@@ -1,7 +1,10 @@
 package electone.constants;
 
 public enum ElectoneModel {
-	EL40(0x3B), EL60(0x3E), EL70(0x35), EL90(0x36);
+	EL40(0x3B),
+	EL60(0x3E),
+	EL70(0x35),
+	EL90(0x36);
 
 	private int byteValue;
 

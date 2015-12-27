@@ -1,36 +1,30 @@
 package electone.dataobjects;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableList;
 
 import electone.constants.DrumInstrument;
 
 public class Pattern {
 
-	private List<TrackPattern> trackPatterns = new ArrayList<>();
+	private Track[] tracks;
 	private PatternIdent patternIdent;
 
-	public Pattern(PatternIdent patternIdent, List<TrackPattern> trackPatterns) {
+	public Pattern(PatternIdent patternIdent, Track[] tracks) {
 		this.patternIdent = patternIdent;
-		this.trackPatterns = trackPatterns;
+		this.tracks = tracks;
 	}
 
-	public void addTrack(TrackPattern track) {
-		trackPatterns.add(track);
-	}
-
-	public TrackPattern getTrackPattern(int index) {
-		return trackPatterns.get(index);
-	}
-
-	public Map<DrumInstrument, Volume> getCount(int count) {
+	public Map<DrumInstrument, Volume> getNotes(int measure) {
 		Map<DrumInstrument, Volume> map = new HashMap<>();
 
-		for (TrackPattern trackPattern : trackPatterns) {
-			Volume volume = trackPattern.getVolume(count);
+		for (Track trackPattern : tracks) {
+			Volume volume = trackPattern.getVolume(measure);
 			DrumInstrument instrument = trackPattern.getInstrument();
 
 			if (volume.isSounding()) {
@@ -40,39 +34,18 @@ public class Pattern {
 		return map;
 	}
 
-	@Override
-	public String toString() {
-		return trackPatterns.stream().map(x -> x.toString()).collect(Collectors.joining("\n"));
-	}
-
-	public Long getNumberOfSounds() {
-		return trackPatterns.stream()
-				.map(track -> track.getNumberOfSounds())
-				.mapToLong(i -> i)
-				.sum();
-	}
-
-	// public static Pattern createEmptyPattern() {
-	// Pattern pattern = new Pattern();
-	//
-	// for (int trackCount = 0; trackCount < Pattern.MAX_TRACKS; trackCount++) {
-	//
-	// CountQuantization countQuantization = trackCount % 2 == 0 ? CountQuantization.WHOLE
-	// : CountQuantization.THIRDS;
-	//
-	// List<Volume> trackPattern = TrackPattern.createEmptyPattern();
-	// TrackPattern track = new TrackPattern(DrumInstrument.values()[trackCount], countQuantization, trackPattern);
-	// pattern.addTrack(track);
-	// }
-	//
-	// return pattern;
-	// }
-
-	public List<TrackPattern> getTrackPatterns() {
-		return trackPatterns;
-	}
-
 	public PatternIdent getPatternIdent() {
 		return patternIdent;
+	}
+
+	public List<Track> getTracks() {
+		List<Track> trackList = Arrays.asList(tracks);
+		Collections.sort(trackList, Track.getOrderedTracksComparator());
+
+		return ImmutableList.copyOf(trackList);
+	}
+
+	public void setTracks(Track[] tracks) {
+		this.tracks = tracks;
 	}
 }

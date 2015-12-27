@@ -1,21 +1,21 @@
 package parser.main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import parser.dataobjects.B00Note;
 import electone.constants.DrumInstrument;
 import electone.dataobjects.Channel;
-import electone.dataobjects.Measure;
 import electone.dataobjects.Notes;
 import electone.dataobjects.Pattern;
+import electone.dataobjects.PatternConstants;
 import electone.dataobjects.PatternIdent;
 import electone.dataobjects.Quantization;
-import electone.dataobjects.TrackPattern;
+import electone.dataobjects.Track;
 import electone.dataobjects.Volume;
 
 public class PatternBuilder {
@@ -42,10 +42,6 @@ public class PatternBuilder {
 				.boxed()
 				.map(channelIndex -> new Channel(channelIndex, this.channelInstruments.get(channelIndex)))
 				.collect(Collectors.toList());
-
-		// TODO we get a 15th channel, that either should not exist or has a purpose. For now let's play along.
-		channels = new ArrayList<>(channels);
-		channels.add(new Channel(15, DrumInstrument.CHANNEL15));
 	}
 
 	public void addNotes(int measureValue, List<B00Note> notesList) {
@@ -60,26 +56,28 @@ public class PatternBuilder {
 	}
 
 	public Pattern build() {
-		List<TrackPattern> trackpatterns = channelMap.entrySet().stream()
-				.map(entry -> {
-					Channel channel = entry.getKey();
-					Notes notes = entry.getValue();
-					return createTrackPattern(channel, notes);
-				})
-				.collect(Collectors.toList());
+		int numberOfChannels = channelMap.size();
+
+		Track[] trackpatterns = new Track[numberOfChannels];
+
+		for (Entry<Channel, Notes> entry : channelMap.entrySet()) {
+			trackpatterns[entry.getKey().getIndex()] = createTrackPattern(entry.getKey(), entry.getValue());
+		}
 
 		return new Pattern(patternIdent, trackpatterns);
 	}
 
-	private TrackPattern createTrackPattern(Channel channel, Notes notes) {
+	private Track createTrackPattern(Channel channel, Notes notes) {
 		Quantization quantization = determineQuantization(channel);
 
-		Map<Measure, Volume> volumes = notes.getNotes().stream()
-				.collect(Collectors.toMap(
-						note -> Measure.of(note.getMeasure()),
-						note -> Volume.of(note.getAccent())));
+		Volume[] trackVolumes = new Volume[PatternConstants.TRACK_QUANTIZATION];
 
-		return new TrackPattern(channel.getIndex(), channel.getInstrument(), quantization, volumes);
+		notes.getNotes()
+				.forEach(note -> trackVolumes[note.getMeasure()] = new Volume(note.getAccent()));
+
+		Track track = new Track(channel.getIndex(), channel.getInstrument(), quantization);
+		track.init(trackVolumes);
+		return track;
 	}
 
 	private Quantization determineQuantization(Channel channel) {

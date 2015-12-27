@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.util.Assert;
+
 import parser.ParserException;
 import parser.util.HexPrintUtil;
 import util.LogUtil;
@@ -34,6 +36,10 @@ public class BinaryData {
 	 */
 	public BinaryData getRange(int from, int to) {
 		return new BinaryData(data.subList(from, to));
+	}
+
+	public BinaryData getRangeIncl(int from, int to) {
+		return getRange(from, to + 1);
 	}
 
 	public BinaryData getTail(int beginningWith) {
@@ -97,6 +103,11 @@ public class BinaryData {
 			throw new ParserException("%s is smaller %d than expected minsize %d.", getDebugInfo(), data.size(),
 					minSize);
 		}
+	}
+
+	public void assertSize(int size) {
+		Assert.isTrue(data.size() == size,
+				String.format("%s %d is not equal to expected size %d.", getDebugInfo(), data.size(), size));
 	}
 
 	@Override
@@ -210,5 +221,4 @@ public class BinaryData {
 	public void setDebugInfo(String debugInfo) {
 		this.debugInfo = debugInfo;
 	}
-
 }

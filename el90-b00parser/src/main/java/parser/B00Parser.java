@@ -3,6 +3,8 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 import parser.constants.BlockKind;
 import parser.constants.Constants;
 import parser.constants.DataKind;
@@ -12,13 +14,16 @@ import parser.dataobjects.B00Pattern;
 import parser.dataobjects.BinaryData;
 import parser.dataobjects.BinaryData.Condition;
 import parser.util.ByteUtil;
+import util.AssertUtil;
 import util.LogUtil;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 import electone.constants.ElectoneModel;
+import electone.dataobjects.PatternConstants;
 import electone.dataobjects.PatternIdent;
+import electone.dataobjects.TimeSignature;
 
 public class B00Parser {
 
@@ -27,11 +32,10 @@ public class B00Parser {
 		BinaryData header = binaryData.getRange(0, 6);
 		BinaryData data = binaryData.getTail(6);
 
-		// TODO
-		header.assertMatch(0, 0xf0, "TODO");
-		header.assertMatch(1, 0x43, "TODO");
-		header.assertMatch(2, 0x70, "TODO");
-		header.assertMatch(3, "TODO", 0x70, 0x78);
+		header.assertMatch(0, 0xf0, "EL90 B00file header magic number");
+		header.assertMatch(1, 0x43, "EL90 B00file header magic number");
+		header.assertMatch(2, 0x70, "EL90 B00file header magic number");
+		header.assertMatch(3, "EL90 B00file header magic number", 0x70, 0x78);
 
 		int modelByte = ByteUtil.and7F(header.get(5));
 		ElectoneModel model = ElectoneModel.getModel(modelByte);
@@ -124,81 +128,63 @@ public class B00Parser {
 	}
 
 	private List<B00Pattern> parsePatternBlock(BinaryData patternBlock) {
-		// TODO I dont know why there is this additional 2
-		patternBlock.assertMinSize(Constants.PATTERN_LENGTH + 2);
+		patternBlock.assertMinSize(Constants.PATTERN_LENGTH + Constants.PATTERN_UNKNOWN_OFFSET_BY_2);
 
-		BinaryData patterns8with5Variations = patternBlock.getHead(Constants.ALL_PATTERNS_COUNT
-				* Constants.SINGLE_PATTERN_LENGTH);
-		List<B00Pattern> patterns = parsePatternsHeaders(patterns8with5Variations);
+		int headerLength = Constants.ALL_PATTERNS_COUNT * Constants.SINGLE_PATTERN_LENGTH;
+		BinaryData patterns8with5VariationsHead = patternBlock.getHead(headerLength);
+		BinaryData dataLengthAndMeasures = patternBlock.getTail(headerLength);
 
-		BinaryData dataLengthAndMeasures = patternBlock.getTail(Constants.ALL_PATTERNS_COUNT
-				* Constants.SINGLE_PATTERN_LENGTH);
 		int dataLength = dataLengthAndMeasures.get(0) + 256 * dataLengthAndMeasures.get(1);
+		BinaryData measures = dataLengthAndMeasures.getTail(2 + Constants.PATTERN_UNKNOWN_WEIRD_GAP);
+		measures.assertSize(dataLength + Constants.PATTERN_UNKNOWN_OFFSET_BY_2);
 
-		BinaryData measures = dataLengthAndMeasures.getTail(2 + Constants.PATTERN_WEIRD_GAP);
-
-		compareSizes(dataLength, measures.size());
-
+		List<B00Pattern> patterns = parsePatternsHeaders(patterns8with5VariationsHead);
 		parseMeasures(patterns, measures);
 		return patterns;
 	}
 
-	private void compareSizes(int dataLength, int dataSize) {
-		LogUtil.log(String.format("calc length/taillength %d %d", dataLength, dataSize));
-
-		// TODO I dont know why there is this additional 2
-		if (dataLength + 2 != dataSize) {
-			throw new RuntimeException("TODO");
-		}
-	}
-
 	private void parseMeasures(List<B00Pattern> patterns, BinaryData rawMeasureData) {
 		for (B00Pattern pattern : patterns) {
+
+			LogUtil.logTraceDump(pattern.getPatternIdent(), "Parsing measures of pattern");
+
 			int offsetMeasure1 = pattern.getOffsetMeasure1();
+
 			BinaryData rawMeasures1 = rawMeasureData.getFromIndexUntilExcluding(offsetMeasure1,
 					Constants.PATTERN_MEASURE_END);
 			List<B00Measure> measures1 = parseMeasures(rawMeasures1);
 			pattern.setMeasures1(measures1);
 
-			// LogUtil.log(measures1);
-			// HexPrintUtil.printMeasures(measures1);
-
 			int offsetMeasure2 = pattern.getOffsetMeasure2();
+
 			BinaryData rawMeasures2 = rawMeasureData.getFromIndexUntilExcluding(offsetMeasure2,
 					Constants.PATTERN_MEASURE_END);
 			List<B00Measure> measures2 = parseMeasures(rawMeasures2);
 			pattern.setMeasures2(measures2);
-
-			// LogUtil.log(measures2);
-			// HexPrintUtil.printMeasures(measures2);
-			// LogUtil.log(pattern.toString());
 		}
-
 	}
 
 	/**
 	 * rawMeasures layout:
 	 * [1 byte time code] [1 byte instrument and volume ]* [0xFF]
 	 * time code: 80=1 88=1.08 88=2
-	 * instrument and volume: 0VVVCCCC V=Volume C=Channel
+	 * instrument and volume: 0VVVCCCC V=Volume/Accent C=Channel
 	 * end marker: 0xFF;
 	 */
 	private List<B00Measure> parseMeasures(BinaryData rawMeasures) {
-		LogUtil.logDebugDump(rawMeasures, "rawMeasures");
+		LogUtil.logTraceDump(rawMeasures, "rawMeasures");
 
 		Condition isMeasureData = x -> (x & Constants.PATTERN_MEASURES_IS_MEASURE_MASK) > 0;
 		List<BinaryData> measuresAndInstrumentsList = rawMeasures.chunksStartingWith(isMeasureData);
 
-		LogUtil.logDebugDump(measuresAndInstrumentsList, "rawMeasures splitted");
+		LogUtil.logTraceDump(measuresAndInstrumentsList, "rawMeasures splitted");
 
 		List<B00Measure> measures = Lists.newArrayList();
 		for (BinaryData measureByteAndInstrumentsBytes : measuresAndInstrumentsList) {
-			if (measureByteAndInstrumentsBytes.isEmpty()) {
-				LogUtil.logWarn("Empty measure should not happen." + measureByteAndInstrumentsBytes.getDebugInfo());
-			} else if (measureByteAndInstrumentsBytes.get(0) == 0xFF) {
-				// TODO we should be done. check and throw exceptions on unexpected input.
-				continue;
-			}
+			ByteUtil.assertFalse(measureByteAndInstrumentsBytes.isEmpty(), "Empty measure should not happen.");
+			ByteUtil.assertFalse(measureByteAndInstrumentsBytes.get(0) == Constants.PATTERN_MEASURE_END,
+					"Measure end byte should have been stripped off.");
+
 			B00Measure measure = parseMeasure(measureByteAndInstrumentsBytes);
 			measures.add(measure);
 		}
@@ -208,7 +194,7 @@ public class B00Parser {
 
 	private B00Measure parseMeasure(BinaryData measureByteAndInstrumentsBytes) {
 		if (measureByteAndInstrumentsBytes.size() < 1) {
-			throw new RuntimeException("Got empty measure data!");
+			throw new ParserException("Got empty measure data!");
 		} else if (measureByteAndInstrumentsBytes.size() < 2) {
 			LogUtil.logWarn(
 					"Strange: This measure contains no instrument data. We expect at least one instrument to play for this measure. measure byte: %d",
@@ -216,19 +202,26 @@ public class B00Parser {
 		}
 
 		int rawMeasure = measureByteAndInstrumentsBytes.get(0);
-		// TODO make sure &0x7f is not needed
-		// int measure24s = (rawMeasure & 0x7F) - 0x80;
-		int measure24s = rawMeasure - 0x80;
-		// TODO measure sanity check
+		int measure24s = ByteUtil.and7F(rawMeasure);
+		AssertUtil.assertValueRange(measure24s, 0, PatternConstants.QUARTERS_PER_BAR
+				* PatternConstants.QUARTER_QUANTIZATION);
+
 		B00Measure measure = new B00Measure(measure24s);
 		for (int i = 1; i < measureByteAndInstrumentsBytes.size(); i++) {
 			int ChannelAndAccent = measureByteAndInstrumentsBytes.get(i);
 			int channel = ChannelAndAccent & Constants.PATTERN_NOTE_CHANNEL_MASK;
+
+			if (channel < 0 || channel > 15) {
+				throw new ParserException("invalid channel " + channel);
+			}
+
 			int accent = (ChannelAndAccent & Constants.PATTERN_NOTE_ACCENT_MASK) >>> Constants.PATTERN_NOTE_ACCENT_SHIFT_RIGHT;
-			ByteUtil.assertValueRange(accent, 0, 7);
-			measure.addNote(channel, accent);
+		AssertUtil.assertValueRange(accent, 0, 7);
+		measure.addNote(channel, accent);
+		LogUtil.logDebug("@%d=%d(%d)", measure24s, channel, accent);
 		}
 
+		LogUtil.logTraceDump(measure, "measure");
 		return measure;
 	}
 
@@ -251,12 +244,14 @@ public class B00Parser {
 			PatternIdent patternIdent = orderedPatternIdents.get(patternIndex);
 			BinaryData patternHeader = patternHeaders.get(patternIndex);
 
-			int measureCount = patternHeader.get(0) + 1;
-			BinaryData channelInstruments = patternHeader.getRange(1, 16);
-			int offsetMeasure1 = patternHeader.get(17) + 256 * patternHeader.get(18) + 1;
+			int quarterTime = patternHeader.get(0) + 1;
+			Assert.isTrue(TimeSignature.isValid(quarterTime));
+
+			BinaryData channelInstruments = patternHeader.getRangeIncl(1, 16);
+			int offsetMeasure1 = patternHeader.get(17) + 256 * patternHeader.get(18);
 			int offsetMeasure2 = offsetMeasure1 + patternHeader.get(19);
 
-			B00Pattern pattern = new B00Pattern(patternIdent, measureCount, channelInstruments, offsetMeasure1,
+			B00Pattern pattern = new B00Pattern(patternIdent, quarterTime, channelInstruments, offsetMeasure1,
 					offsetMeasure2);
 			patterns.add(pattern);
 		}
@@ -272,5 +267,4 @@ public class B00Parser {
 		orderedPatternIdents.addAll(fillInsIdent);
 		return orderedPatternIdents;
 	}
-
 }

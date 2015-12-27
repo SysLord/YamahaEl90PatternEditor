@@ -20,7 +20,6 @@ import parser.ParserMain;
 import util.LogUtil;
 import de.syslord.electonePattern.Audio.Player;
 import de.syslord.electonePattern.fxui.PatternControl;
-import de.syslord.electonePattern.fxui.PatternModel;
 import de.syslord.electonePattern.spring.AppContextHelper;
 import de.syslord.electonePattern.util.IntStreamUtil;
 import electone.constants.PatternVariation;
@@ -36,13 +35,28 @@ public class PatternFxApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 
+		// String path = "C:\\JEEworkspace\\RHY_MDR_00.B00";
+		String path = "C:\\JEEworkspace\\SCRUBS_UND_JAZZ_0-AFILL_1-AFILL_MDR_03.B00";
+		Pattern pattern = parsePatternsAndChooseOne(path);
+
 		player = new Player(pos -> handlePos(pos));
-		Pattern pattern = parseForFun();
 		player.setModel(pattern);
-		PatternModel patternModel = PatternModelFactory.INSTANCE.createModel(pattern);
 
-		createStage(primaryStage, patternModel);
+		createStage(primaryStage);
 
+		patternControl.patternProperty().set(pattern);
+	}
+
+	private void createStage(Stage primaryStage) {
+		primaryStage.setTitle("EL90 Pattern Editor");
+
+		BorderPane mainLayout = new BorderPane();
+		Scene scene = new Scene(mainLayout, 700, 800);
+
+		createLayout(mainLayout);
+
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 
 	@Override
@@ -51,25 +65,13 @@ public class PatternFxApplication extends Application {
 		super.stop();
 	}
 
-	private void handlePos(int listener) {
-		Platform.runLater(() -> patternControl.highlightProperty().set(listener));
+	private void handlePos(int positionValue) {
+		Platform.runLater(() -> patternControl.highlightProperty().set(positionValue));
 	}
 
-	private void createStage(Stage primaryStage, PatternModel patternModel) {
-		primaryStage.setTitle("EL90 Pattern Editor");
+	private void createLayout(BorderPane mainLayout) {
 
-		BorderPane mainLayout = new BorderPane();
-		Scene scene = new Scene(mainLayout, 700, 800);
-
-		createLayout(mainLayout, patternModel);
-
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
-
-	private void createLayout(BorderPane mainLayout, PatternModel patternModel) {
-
-		patternControl = new PatternControl(patternModel);
+		patternControl = new PatternControl();
 		patternControl.setBackground(new Background(new BackgroundFill(Color.AZURE, null, null)));
 
 		mainLayout.setCenter(patternControl);
@@ -88,26 +90,16 @@ public class PatternFxApplication extends Application {
 		mainLayout.setTop(new HBox(play, stop, speed));
 	}
 
-	private Pattern parseForFun() {
+	private Pattern parsePatternsAndChooseOne(String path) {
 		ParserMain parserMain = AppContextHelper.getBean(ParserMain.class);
-		Patterns patterns = parserMain.parsePatternsFromFile("C:\\JEEworkspace\\RHY_MDR_00.B00");
+		Patterns patterns = parserMain.parsePatternsFromFile(path);
 
 		LogUtil.logDump(patterns.getAvailablePatterns(), "availble patterns");
 
-		Pattern fallback = patterns.get(PatternIdent.of(1, PatternVariation.A));
-		Pattern orElse = patterns.getAvailablePatterns().stream()
-				.map(ident -> patterns.get(ident))
-				.filter(p -> p.getNumberOfSounds() > 15)
-				.findFirst()
-				.orElse(fallback);
+		// Pattern orElse = patterns.get(PatternIdent.of(0, PatternVariation.FILL_IN));
+		// Pattern orElse = patterns.get(PatternIdent.of(1, PatternVariation.A));
+		Pattern orElse = patterns.get(PatternIdent.of(5, PatternVariation.A));
 
-		// if (orElse == fallback) {
-		// throw new RuntimeException("NOPE");
-		// }
-		orElse = patterns.get(PatternIdent.of(0, PatternVariation.FILL_IN));
-
-		LogUtil.logDump(orElse.getPatternIdent(), "We will use pattern");
-		LogUtil.logDump(orElse.getNumberOfSounds(), "NUMBER OF SOUNDS");
 		return orElse;
 	}
 }

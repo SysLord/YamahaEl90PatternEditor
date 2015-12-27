@@ -12,7 +12,7 @@ public enum Quantization {
 	EIGHTH(8),
 	SIXTEENTH(16),
 	THIRDS(3 * 4),
-	FINEST(BarConstants.QUARTER_QUANTIZATION * BarConstants.MAX_QUARTERS_PER_BAR);
+	FINEST(PatternConstants.QUARTER_QUANTIZATION * PatternConstants.QUARTERS_PER_BAR);
 
 	private int countsPerBar;
 

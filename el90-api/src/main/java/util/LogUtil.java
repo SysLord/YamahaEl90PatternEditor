@@ -40,6 +40,10 @@ public class LogUtil {
 		logger.log(Level.DEBUG, formatDump(dump, description));
 	}
 
+	public static void logTraceDump(Object dump, String description) {
+		logger.log(Level.TRACE, formatDump(dump, description));
+	}
+
 	private static String formatDump(Object dump, String description) {
 		return String.format("%s:\n%s", description, dump == null ? "null" : dump.toString());
 	}

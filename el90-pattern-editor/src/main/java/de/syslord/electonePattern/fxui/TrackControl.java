@@ -8,14 +8,18 @@ import javafx.scene.layout.HBox;
 import java.util.ArrayList;
 import java.util.List;
 
+import electone.dataobjects.Track;
+import electone.dataobjects.Volume;
+
 //TODO wrap TrackControl in another HBox for instrument name and track user controls.
 public class TrackControl extends HBox {
 
-	private TrackModel trackModel;
+	private static final int TRACK_DESCRIPTION_WIDTH = 200;
+	private Track track;
 	private IntegerProperty highlightProperty = new SimpleIntegerProperty(0);
 
-	public TrackControl(TrackModel track) {
-		this.trackModel = track;
+	public TrackControl(Track track) {
+		this.track = track;
 		initControls();
 	}
 
@@ -24,20 +28,21 @@ public class TrackControl extends HBox {
 
 		Label label = new Label();
 		this.getChildren().add(label);
-		label.textProperty().bind(trackModel.instrumentNameProperty().concat(highlightProperty));
+		label.textProperty().bind(
+				track.trackIndexProperty().asString().concat(track.instrumentNameProperty()).concat(highlightProperty));
 
 		label.maxHeightProperty().bind(this.heightProperty());
 		label.prefHeightProperty().bind(this.heightProperty());
-		label.setMaxWidth(200);
-		label.setMinWidth(200);
-		label.setPrefWidth(200);
+		label.setMaxWidth(TRACK_DESCRIPTION_WIDTH);
+		label.setMinWidth(TRACK_DESCRIPTION_WIDTH);
+		label.setPrefWidth(TRACK_DESCRIPTION_WIDTH);
 
-		int controlsCount = trackModel.size();
+		int controlsCount = track.size();
 
 		List<VolumeControl> controls = new ArrayList<>();
 
-		for (VolumeModel volume : trackModel) {
-			VolumeControl volumeControl = new VolumeControl(volume, VolumeModel.VOL_STEPS);
+		for (Volume volume : track.getVolumes()) {
+			VolumeControl volumeControl = new VolumeControl(volume);
 			volumeControl.maxHeightProperty().bind(this.heightProperty());
 			volumeControl.prefHeightProperty().bind(this.heightProperty());
 
@@ -57,8 +62,6 @@ public class TrackControl extends HBox {
 			// TODO mess
 				int abdeckungEinControl = (2 * 4 * 24) / controlsCount;
 				int child = i / abdeckungEinControl;
-				System.out.println(i);
-				System.out.println(child);
 				controls.get(child).updateHighlight(i % abdeckungEinControl);
 			});
 	}
