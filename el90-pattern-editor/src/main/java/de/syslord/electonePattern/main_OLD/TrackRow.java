@@ -78,13 +78,13 @@ public class TrackRow extends JPanel {
 		this.model = model;
 
 		int countsPerBar = model.getQuantization().getCountsPerBar();
-		int counts = PatternConstants.MAX_BARS * PatternConstants.MAX_BAR_COUNTS * countsPerBar;
+		int counts = PatternConstants.BARS * PatternConstants.QUARTERS_PER_BAR * countsPerBar;
 
 		label.setText(model.getInstrumentRepresentation());
 
 		for (int count = 0; count < counts; count++) {
 			VolumeSelect volumeSelect = new VolumeSelect();
-			int usedCount = (PatternConstants.MAX_PATTERN_LENGTH / counts) * count;
+			int usedCount = (PatternConstants.TRACK_QUANTIZATION / counts) * count;
 			volumeSelect.setModel(model.getVolume(usedCount));
 			volumeSelectors.add(volumeSelect);
 			patternPanel.add(volumeSelect);
@@ -93,7 +93,7 @@ public class TrackRow extends JPanel {
 
 	public void setHighlight(int column) {
 		int countsPerBar = model.getQuantization().getCountsPerBar();
-		int step = PatternConstants.MAX_SUBCOUNT / countsPerBar;
+		int step = PatternConstants.QUARTER_QUANTIZATION / countsPerBar;
 		int componentIndex = column / step;
 
 		if (currentColumnHighlight >= 0 && componentIndex != currentColumnHighlight) {
@@ -105,7 +105,7 @@ public class TrackRow extends JPanel {
 
 	public void setHighlightBackground(int column) {
 		int countsPerBar = model.getQuantization().getCountsPerBar();
-		int step = PatternConstants.MAX_SUBCOUNT / countsPerBar;
+		int step = PatternConstants.QUARTER_QUANTIZATION / countsPerBar;
 		if (column % step == 0) {
 			int componentIndex = column / step;
 			if (componentIndex < volumeSelectors.size()) {

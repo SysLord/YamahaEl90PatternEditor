@@ -47,7 +47,7 @@ public class Player {
 		}
 
 		this.playing = true;
-		final int pause = (1000 * MINUTE_SECONDS) / (beatsPerMinute * PatternConstants.MAX_SUBCOUNT);
+		final int pause = (1000 * MINUTE_SECONDS) / (beatsPerMinute * PatternConstants.QUARTER_QUANTIZATION);
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
@@ -67,7 +67,7 @@ public class Player {
 	}
 
 	private void playPattern(final int pause) {
-		for (int position = 0; position < PatternConstants.MAX_PATTERN_LENGTH; position++) {
+		for (int position = 0; position < PatternConstants.TRACK_QUANTIZATION; position++) {
 			listener.updatePosition(position);
 			playCount(position);
 

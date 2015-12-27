@@ -21,6 +21,11 @@ import electone.dataobjects.Patterns;
 @Component
 public class ParserMainImpl implements ParserMain {
 
+	/**
+	 * Parser main, for tests. Logs results.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		if (args.length < 1) {
@@ -43,11 +48,8 @@ public class ParserMainImpl implements ParserMain {
 		B00Parser parser = new B00Parser();
 		B00Data b00Data = parser.parse(binaryData);
 
-		LogUtil.logDebugDump(b00Data, "B00 object");
-
 		PatternConverter converter = new PatternConverter();
-
-		return converter.toBusiness(b00Data);
+		return converter.fromB00ToPattern(b00Data);
 	}
 
 	private static byte[] readFile(Path path) {

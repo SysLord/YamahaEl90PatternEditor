@@ -11,12 +11,10 @@ import electone.constants.DrumInstrument;
 public class Pattern {
 
 	private List<TrackPattern> trackPatterns = new ArrayList<>();
+	private PatternIdent patternIdent;
 
-	public Pattern() {
-		//
-	}
-
-	public Pattern(List<TrackPattern> trackPatterns) {
+	public Pattern(PatternIdent patternIdent, List<TrackPattern> trackPatterns) {
+		this.patternIdent = patternIdent;
 		this.trackPatterns = trackPatterns;
 	}
 
@@ -72,5 +70,9 @@ public class Pattern {
 
 	public List<TrackPattern> getTrackPatterns() {
 		return trackPatterns;
+	}
+
+	public PatternIdent getPatternIdent() {
+		return patternIdent;
 	}
 }

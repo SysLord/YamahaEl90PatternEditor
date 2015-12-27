@@ -1,6 +1,7 @@
-package de.syslord.electonePattern.fxui;
+package de.syslord.electonePattern.application;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,12 +15,14 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import parser.ParserMain;
 import util.LogUtil;
 import de.syslord.electonePattern.Audio.Player;
+import de.syslord.electonePattern.fxui.PatternControl;
+import de.syslord.electonePattern.fxui.PatternModel;
 import de.syslord.electonePattern.spring.AppContextHelper;
+import de.syslord.electonePattern.util.IntStreamUtil;
 import electone.constants.PatternVariation;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternIdent;
@@ -28,6 +31,7 @@ import electone.dataobjects.Patterns;
 public class PatternFxApplication extends Application {
 
 	private Player player;
+	private PatternControl patternControl;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -48,7 +52,7 @@ public class PatternFxApplication extends Application {
 	}
 
 	private void handlePos(int listener) {
-		// TODO
+		Platform.runLater(() -> patternControl.highlightProperty().set(listener));
 	}
 
 	private void createStage(Stage primaryStage, PatternModel patternModel) {
@@ -65,16 +69,13 @@ public class PatternFxApplication extends Application {
 
 	private void createLayout(BorderPane mainLayout, PatternModel patternModel) {
 
-		PatternControl patternControl = new PatternControl(patternModel);
+		patternControl = new PatternControl(patternModel);
 		patternControl.setBackground(new Background(new BackgroundFill(Color.AZURE, null, null)));
 
 		mainLayout.setCenter(patternControl);
 
 		ComboBox<Integer> speed = new ComboBox<Integer>();
-		List<Integer> collect = IntStream.range(0, (250 - 40) / 10)
-				.boxed()
-				.map(val -> (10 * val) + 40)
-				.collect(Collectors.toList());
+		List<Integer> collect = IntStreamUtil.intStream(10, 10, 250).collect(Collectors.toList());
 
 		speed.setItems(FXCollections.observableArrayList(collect));
 		speed.setValue(120);
@@ -100,6 +101,12 @@ public class PatternFxApplication extends Application {
 				.findFirst()
 				.orElse(fallback);
 
+		// if (orElse == fallback) {
+		// throw new RuntimeException("NOPE");
+		// }
+		orElse = patterns.get(PatternIdent.of(0, PatternVariation.FILL_IN));
+
+		LogUtil.logDump(orElse.getPatternIdent(), "We will use pattern");
 		LogUtil.logDump(orElse.getNumberOfSounds(), "NUMBER OF SOUNDS");
 		return orElse;
 	}

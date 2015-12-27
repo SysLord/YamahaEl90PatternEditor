@@ -1,10 +1,13 @@
 package de.syslord.electonePattern.fxui;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.VBox;
 
 public class PatternControl extends VBox {
 
 	private PatternModel pattern;
+	private IntegerProperty highlightProperty = new SimpleIntegerProperty(0);
 
 	public PatternControl(PatternModel pattern) {
 		this.pattern = pattern;
@@ -25,7 +28,13 @@ public class PatternControl extends VBox {
 			trackControl.maxWidthProperty().bind(this.widthProperty());
 			trackControl.prefWidthProperty().bind(this.widthProperty());
 
+			trackControl.highlightProperty().bind(highlightProperty);
+
 			this.getChildren().add(trackControl);
 		}
+	}
+
+	public IntegerProperty highlightProperty() {
+		return highlightProperty;
 	}
 }

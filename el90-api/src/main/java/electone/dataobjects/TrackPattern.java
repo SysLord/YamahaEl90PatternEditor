@@ -10,11 +10,15 @@ public class TrackPattern {
 
 	private DrumInstrument instrument;
 
-	private CountQuantization quantization;
+	private Quantization quantization;
 
 	private Map<Measure, Volume> countVolumes;
 
-	public TrackPattern(DrumInstrument instrument, CountQuantization quantization, Map<Measure, Volume> countVolumes) {
+	private int channelIndex;
+
+	public TrackPattern(int channelIndex, DrumInstrument instrument, Quantization quantization,
+			Map<Measure, Volume> countVolumes) {
+		this.channelIndex = channelIndex;
 		this.instrument = instrument;
 		this.quantization = quantization;
 		this.countVolumes = countVolumes;
@@ -22,11 +26,11 @@ public class TrackPattern {
 	}
 
 	private void assureCounts() {
-		IntStream.range(0, PatternConstants.MAX_PATTERN_LENGTH)
-				.boxed()
-				.map(measureValue -> Measure.of(measureValue))
-				.filter(measure -> !countVolumes.containsKey(measure))
-				.forEach(measure -> countVolumes.put(measure, Volume.createSilent()));
+		IntStream.range(0, PatternConstants.TRACK_QUANTIZATION)
+		.boxed()
+		.map(measureValue -> Measure.of(measureValue))
+		.filter(measure -> !countVolumes.containsKey(measure))
+		.forEach(measure -> countVolumes.put(measure, Volume.createSilent()));
 	}
 
 	public DrumInstrument getInstrument() {
@@ -41,7 +45,7 @@ public class TrackPattern {
 		this.instrument = instrument;
 	}
 
-	public CountQuantization getQuantization() {
+	public Quantization getQuantization() {
 		return quantization;
 	}
 
@@ -64,5 +68,9 @@ public class TrackPattern {
 		return countVolumes.values().stream()
 				.filter(v -> v.isSounding())
 				.collect(Collectors.counting());
+	}
+
+	public int getChannelIndex() {
+		return channelIndex;
 	}
 }

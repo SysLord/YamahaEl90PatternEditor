@@ -10,10 +10,11 @@ import java.util.stream.IntStream;
 import parser.dataobjects.B00Note;
 import electone.constants.DrumInstrument;
 import electone.dataobjects.Channel;
-import electone.dataobjects.CountQuantization;
 import electone.dataobjects.Measure;
 import electone.dataobjects.Notes;
 import electone.dataobjects.Pattern;
+import electone.dataobjects.PatternIdent;
+import electone.dataobjects.Quantization;
 import electone.dataobjects.TrackPattern;
 import electone.dataobjects.Volume;
 
@@ -22,9 +23,11 @@ public class PatternBuilder {
 	private Map<Channel, Notes> channelMap = new HashMap<>();
 	private List<DrumInstrument> channelInstruments;
 	private List<Channel> channels;
+	private PatternIdent patternIdent;
 
-	public PatternBuilder(List<DrumInstrument> channelInstruments) {
+	public PatternBuilder(List<DrumInstrument> channelInstruments, PatternIdent patternIdent) {
 		this.channelInstruments = channelInstruments;
+		this.patternIdent = patternIdent;
 
 		initChannels();
 		initChannelMap();
@@ -65,23 +68,23 @@ public class PatternBuilder {
 				})
 				.collect(Collectors.toList());
 
-		return new Pattern(trackpatterns);
+		return new Pattern(patternIdent, trackpatterns);
 	}
 
 	private TrackPattern createTrackPattern(Channel channel, Notes notes) {
-		CountQuantization quantization = determineQuantization(channel);
+		Quantization quantization = determineQuantization(channel);
 
 		Map<Measure, Volume> volumes = notes.getNotes().stream()
 				.collect(Collectors.toMap(
 						note -> Measure.of(note.getMeasure()),
 						note -> Volume.of(note.getAccent())));
 
-		return new TrackPattern(channel.getInstrument(), quantization, volumes);
+		return new TrackPattern(channel.getIndex(), channel.getInstrument(), quantization, volumes);
 	}
 
-	private CountQuantization determineQuantization(Channel channel) {
+	private Quantization determineQuantization(Channel channel) {
 		Notes notes = channelMap.get(channel);
-		return CountQuantization.getLargestQuantization(notes.getMeasures());
+		return Quantization.getMostCoarseQuantization(notes.getMeasures());
 	}
 
 }

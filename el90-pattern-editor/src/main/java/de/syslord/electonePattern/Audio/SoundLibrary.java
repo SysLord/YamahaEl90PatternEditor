@@ -1,7 +1,5 @@
 package de.syslord.electonePattern.Audio;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,23 +32,10 @@ public class SoundLibrary {
 	/**
 	 * Returns file:/C:/.....
 	 *
-	 * Every other format seems invalid.
+	 * Every other format seems invalid for use with AudioClip.
 	 */
-	private static String getAudioClipUsableUrl1(String resourcePath) {
-		try {
-			return new File(resourcePath).toURI().toURL().toExternalForm();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	private static String getAudioClipUsableUrl(String resourcePath) {
-		// try {
 		ClassLoader loader = SoundLibrary.class.getClassLoader();
 		return loader.getResource(resourcePath).toExternalForm();
-		// return new File(resourcePath).toURI().toURL().toExternalForm();
-		// } catch (MalformedURLException e) {
-		// throw new RuntimeException(e);
-		// }
 	}
 }

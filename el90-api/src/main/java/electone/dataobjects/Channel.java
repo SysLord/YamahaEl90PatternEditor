@@ -55,4 +55,8 @@ public class Channel {
 		return "Channel [channelIndex=" + channelIndex + ", instrument=" + instrument + "]";
 	}
 
+	public int getIndex() {
+		return channelIndex;
+	}
+
 }

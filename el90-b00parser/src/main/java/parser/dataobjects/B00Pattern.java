@@ -2,8 +2,8 @@ package parser.dataobjects;
 
 import java.util.List;
 
-import electone.dataobjects.PatternIdent;
 import parser.util.HexPrintUtil;
+import electone.dataobjects.PatternIdent;
 
 public class B00Pattern {
 
@@ -44,6 +44,37 @@ public class B00Pattern {
 		String measu = String.format("measures1:\n%s\nmeasures2\n%s\n", parsedMeasures1.toString(),
 				parsedMeasures2.toString());
 		return format + "\n" + "\n" + measu;
+	}
+
+	// TODO REMOVE later - debugging
+	public String debugPrintparsed() {
+		StringBuilder debugPrint = debugPrint(parsedMeasures1);
+		StringBuilder debugPrint2 = debugPrint(parsedMeasures2);
+
+		return patternIdent.toString() + "\n" + debugPrint.toString() + "\n" + debugPrint2.toString();
+	}
+
+	private StringBuilder debugPrint(List<B00Measure> pp) {
+		int[][] x = new int[16][4 * 24];
+
+		for (B00Measure m : pp) {
+			int measure = m.getMeasure();
+			List<B00Note> notes = m.getNotes();
+			for (B00Note note : notes) {
+				int channel = note.getChannel();
+				int accent = note.getAccent();
+				x[channel][measure] = accent;
+			}
+		}
+
+		StringBuilder b = new StringBuilder();
+		for (int[] chan : x) {
+			for (int i : chan) {
+				b.append(i);
+			}
+			b.append("\n");
+		}
+		return b;
 	}
 
 	public PatternIdent getPatternIdent() {

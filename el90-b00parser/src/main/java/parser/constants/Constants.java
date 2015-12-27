@@ -35,4 +35,8 @@ public interface Constants {
 
 	int BULK_DUMP_BLOCK_HEADER_LENGTH = 6;
 
+	/*  */
+	int QUARTER_QUANTIZATION = 24;
+	int MAX_QUARTERS_PER_BAR = 4;
+
 }

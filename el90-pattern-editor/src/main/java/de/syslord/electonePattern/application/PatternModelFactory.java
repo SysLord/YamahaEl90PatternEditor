@@ -1,11 +1,14 @@
-package de.syslord.electonePattern.fxui;
+package de.syslord.electonePattern.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import electone.dataobjects.CountQuantization;
+import de.syslord.electonePattern.fxui.PatternModel;
+import de.syslord.electonePattern.fxui.TrackModel;
+import de.syslord.electonePattern.fxui.VolumeModel;
 import electone.dataobjects.Pattern;
+import electone.dataobjects.Quantization;
 import electone.dataobjects.Volume;
 
 public class PatternModelFactory {
@@ -20,18 +23,17 @@ public class PatternModelFactory {
 		List<TrackModel> tracks = p.getTrackPatterns().stream()
 				.map(trackPattern -> {
 
-					CountQuantization quantization = trackPattern.getQuantization();
+					Quantization quantization = trackPattern.getQuantization();
 					// TODO assume 4/4
 					// int num = 2 * quantization.getCountsPerBar();
-					// int num = 2 * 4 * 24;
-					int num = 2 * 4 * 8;
+					int num = 2 * 4 * 24;
+					// int num = 2 * 4 * 8;
 					System.out.println("Quantization " + num);
 
 					List<VolumeModel> volumes = IntStream.range(0, num)
 							.boxed()
 							.map(i1 -> {
 								int count = i1;
-								// System.out.println(count);
 								Volume volume = trackPattern.getVolume(count);
 								if (volume == null) {
 									return new VolumeModel(7);
@@ -42,7 +44,7 @@ public class PatternModelFactory {
 
 								return new VolumeModel(volume2);
 							}).collect(Collectors.toList());
-					return new TrackModel(volumes);
+					return new TrackModel(trackPattern.getChannelIndex(), trackPattern.getInstrument(), volumes);
 				}).collect(Collectors.toList());
 
 		// List<TrackModel> tracks = IntStream.range(0, 16).boxed().map(i -> {
@@ -59,20 +61,20 @@ public class PatternModelFactory {
 		return patternModel;
 	}
 
-	// TODO for debugging
-	public PatternModel createExampleModel() {
-		List<TrackModel> tracks = IntStream.range(0, 16).boxed().map(i -> {
-
-			List<VolumeModel> volumes = IntStream.range(0, 24 * 8)
-					.boxed()
-					.map(i1 -> new VolumeModel(i1 % 8))
-					.collect(Collectors.toList());
-			return new TrackModel(volumes);
-
-		}).collect(Collectors.toList());
-
-		PatternModel patternModel = new PatternModel(tracks);
-		return patternModel;
-	}
+	// // TODO for debugging
+	// public PatternModel createExampleModel() {
+	// List<TrackModel> tracks = IntStream.range(0, 16).boxed().map(i -> {
+	//
+	// List<VolumeModel> volumes = IntStream.range(0, 24 * 8)
+	// .boxed()
+	// .map(i1 -> new VolumeModel(i1 % 8))
+	// .collect(Collectors.toList());
+	// return new TrackModel(volumes);
+	//
+	// }).collect(Collectors.toList());
+	//
+	// PatternModel patternModel = new PatternModel(tracks);
+	// return patternModel;
+	// }
 
 }
