@@ -14,9 +14,11 @@ public class Pattern {
 
 	private Track[] tracks;
 	private PatternIdent patternIdent;
+	private TimeSignature timeSignature;
 
-	public Pattern(PatternIdent patternIdent, Track[] tracks) {
+	public Pattern(PatternIdent patternIdent, TimeSignature timeSignature, Track[] tracks) {
 		this.patternIdent = patternIdent;
+		this.timeSignature = timeSignature;
 		this.tracks = tracks;
 	}
 
@@ -47,5 +49,9 @@ public class Pattern {
 
 	public void setTracks(Track[] tracks) {
 		this.tracks = tracks;
+	}
+
+	public TimeSignature getTimeSignature() {
+		return timeSignature;
 	}
 }

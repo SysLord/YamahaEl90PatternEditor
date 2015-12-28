@@ -1,9 +1,8 @@
 package parser.dataobjects;
 
-import static parser.util.ByteUtil.and7F;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
@@ -12,23 +11,36 @@ import parser.ParserException;
 import parser.util.HexPrintUtil;
 import util.LogUtil;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class BinaryData {
+
+	private static final String UNKNOWN_DATA = "'unknown data'";
 
 	public interface Condition {
 		boolean condition(int value);
 	}
 
 	private List<Integer> data;
-	private String debugInfo = "unknown chunk";
+
+	private String debugInfo = UNKNOWN_DATA;
 
 	public BinaryData(List<Integer> data) {
-		this.data = data;
+		this.data = ImmutableList.copyOf(data);
+	}
+
+	public BinaryData(List<Integer> data, String debugInfo) {
+		this(data);
+		this.debugInfo = debugInfo;
 	}
 
 	public static BinaryData create(Integer... values) {
-		return new BinaryData(Arrays.asList(values));
+		return new BinaryData(Arrays.asList(values), UNKNOWN_DATA);
+	}
+
+	public BinaryData as(String debugInfo) {
+		return new BinaryData(data, debugInfo);
 	}
 
 	/**
@@ -42,8 +54,8 @@ public class BinaryData {
 		return getRange(from, to + 1);
 	}
 
-	public BinaryData getTail(int beginningWith) {
-		List<Integer> tail = data.subList(beginningWith, data.size());
+	public BinaryData getTail(int startingAt) {
+		List<Integer> tail = data.subList(startingAt, data.size());
 		return new BinaryData(tail);
 	}
 
@@ -51,13 +63,13 @@ public class BinaryData {
 		return data.get(position);
 	}
 
-	public BinaryData getHead(int headerLength) {
-		List<Integer> head = head(headerLength);
+	public BinaryData getHead(int exclUpperBound) {
+		List<Integer> head = head(exclUpperBound);
 		return new BinaryData(head);
 	}
 
-	protected List<Integer> head(int headerLength) {
-		return data.subList(0, headerLength);
+	protected List<Integer> head(int exclUpperBound) {
+		return data.subList(0, exclUpperBound);
 	}
 
 	public void assertMatch(int index, int value, String reason) {
@@ -73,17 +85,6 @@ public class BinaryData {
 
 		if (!anyMatch) {
 			throw new ParserException(reason);
-		}
-	}
-
-	public void matchChecksum(int expectedSum) {
-		Integer actualSum = 0;
-		for (Integer value : data) {
-			actualSum = and7F(actualSum + value);
-		}
-		int num = and7F(expectedSum + actualSum);
-		if (num != 0x7F) {
-			throw new ParserException("Checksum bad");
 		}
 	}
 
@@ -121,7 +122,7 @@ public class BinaryData {
 
 	public List<BinaryData> getEquallySizedChunks(int chunkSize) {
 		if (data.size() % chunkSize != 0) {
-			throw new ParserException("%s cannot be split in %d-sized chunks, because size %d is not devidable.",
+			throw new ParserException("%s cannot be split in %d-sized chunks, because size %d is not devisible.",
 					getDebugInfo(), chunkSize, data.size());
 		}
 
@@ -218,7 +219,11 @@ public class BinaryData {
 		return debugInfo;
 	}
 
-	public void setDebugInfo(String debugInfo) {
-		this.debugInfo = debugInfo;
+	public static List<BinaryData> nameListAs(List<BinaryData> dataList, String debugString) {
+		Function<BinaryData, BinaryData> mapper = binaryData -> binaryData.as(debugString);
+		return dataList.stream()
+				.map(mapper)
+				.collect(Collectors.toList());
 	}
+
 }

@@ -15,6 +15,7 @@ import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternConstants;
 import electone.dataobjects.PatternIdent;
 import electone.dataobjects.Quantization;
+import electone.dataobjects.TimeSignature;
 import electone.dataobjects.Track;
 import electone.dataobjects.Volume;
 
@@ -24,10 +25,12 @@ public class PatternBuilder {
 	private List<DrumInstrument> channelInstruments;
 	private List<Channel> channels;
 	private PatternIdent patternIdent;
+	private TimeSignature quarterTime;
 
-	public PatternBuilder(List<DrumInstrument> channelInstruments, PatternIdent patternIdent) {
+	public PatternBuilder(List<DrumInstrument> channelInstruments, PatternIdent patternIdent, TimeSignature quarterTime) {
 		this.channelInstruments = channelInstruments;
 		this.patternIdent = patternIdent;
+		this.quarterTime = quarterTime;
 
 		initChannels();
 		initChannelMap();
@@ -64,7 +67,7 @@ public class PatternBuilder {
 			trackpatterns[entry.getKey().getIndex()] = createTrackPattern(entry.getKey(), entry.getValue());
 		}
 
-		return new Pattern(patternIdent, trackpatterns);
+		return new Pattern(patternIdent, quarterTime, trackpatterns);
 	}
 
 	private Track createTrackPattern(Channel channel, Notes notes) {
@@ -73,7 +76,7 @@ public class PatternBuilder {
 		Volume[] trackVolumes = new Volume[PatternConstants.TRACK_QUANTIZATION];
 
 		notes.getNotes()
-				.forEach(note -> trackVolumes[note.getMeasure()] = new Volume(note.getAccent()));
+		.forEach(note -> trackVolumes[note.getMeasure()] = new Volume(note.getAccent()));
 
 		Track track = new Track(channel.getIndex(), channel.getInstrument(), quantization);
 		track.init(trackVolumes);

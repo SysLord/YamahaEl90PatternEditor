@@ -29,4 +29,10 @@ public enum TimeSignature {
 				.isPresent();
 		return match;
 	}
+
+	public static TimeSignature fromQuarterCount(int quartersPerBar) {
+		return Arrays.asList(TimeSignature.values()).stream()
+				.filter(timeSig -> timeSig.getQuartersPerBar() == quartersPerBar)
+				.findAny().orElseThrow(() -> new RuntimeException("non existant quarter time"));
+	}
 }

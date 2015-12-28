@@ -131,4 +131,8 @@ public enum DrumInstrument implements Instrument {
 		throw new RuntimeException(" INVALID KEY INDEX ======================================================== "
 				+ keyIndex);
 	}
+
+	public int getKey() {
+		return key;
+	}
 }

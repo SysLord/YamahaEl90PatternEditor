@@ -97,8 +97,8 @@ public class PatternFxApplication extends Application {
 		LogUtil.logDump(patterns.getAvailablePatterns(), "availble patterns");
 
 		// Pattern orElse = patterns.get(PatternIdent.of(0, PatternVariation.FILL_IN));
-		// Pattern orElse = patterns.get(PatternIdent.of(1, PatternVariation.A));
-		Pattern orElse = patterns.get(PatternIdent.of(5, PatternVariation.A));
+		Pattern orElse = patterns.get(PatternIdent.of(1, PatternVariation.A));
+		// Pattern orElse = patterns.get(PatternIdent.of(5, PatternVariation.A));
 
 		return orElse;
 	}

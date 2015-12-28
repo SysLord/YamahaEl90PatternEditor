@@ -13,6 +13,8 @@ public class B00Pattern {
 
 	private BinaryData channelInstruments;
 
+	// TODO unclean: B00Pattern moves from knowing the offsets to knowing the measures and backwards. Internal state.
+	// Maybe create PatternMetadata class.
 	private int offsetMeasureBar1;
 
 	private int offsetMeasureBar2;
@@ -21,13 +23,10 @@ public class B00Pattern {
 
 	private List<B00Measure> parsedMeasuresBar2;
 
-	public B00Pattern(PatternIdent patternIdent, int quarterTime, BinaryData channelInstruments, int offsetMeasure1,
-			int offsetMeasure2) {
+	public B00Pattern(PatternIdent patternIdent, int quarterTime, BinaryData channelInstruments) {
 		this.patternIdent = patternIdent;
 		this.quarterTime = quarterTime;
 		this.channelInstruments = channelInstruments;
-		this.offsetMeasureBar1 = offsetMeasure1;
-		this.offsetMeasureBar2 = offsetMeasure2;
 	}
 
 	@Override
@@ -88,14 +87,6 @@ public class B00Pattern {
 		return patternIdent;
 	}
 
-	public int getOffsetMeasure1() {
-		return offsetMeasureBar1;
-	}
-
-	public int getOffsetMeasure2() {
-		return offsetMeasureBar2;
-	}
-
 	public void setMeasures1(List<B00Measure> parsedMeasures1) {
 		this.parsedMeasuresBar1 = parsedMeasures1;
 	}
@@ -114,6 +105,26 @@ public class B00Pattern {
 
 	public List<Integer> getInstrumentsIds() {
 		return channelInstruments.getData();
+	}
+
+	public int getQuarterTime() {
+		return quarterTime;
+	}
+
+	public int getOffsetMeasureBar1() {
+		return offsetMeasureBar1;
+	}
+
+	public void setOffsetMeasureBar1(int offsetMeasureBar1) {
+		this.offsetMeasureBar1 = offsetMeasureBar1;
+	}
+
+	public int getOffsetMeasureBar2() {
+		return offsetMeasureBar2;
+	}
+
+	public void setOffsetMeasureBar2(int offsetMeasureBar2) {
+		this.offsetMeasureBar2 = offsetMeasureBar2;
 	}
 
 }

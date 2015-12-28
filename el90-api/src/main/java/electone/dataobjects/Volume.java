@@ -20,7 +20,7 @@ public class Volume {
 		return new Volume(0);
 	}
 
-	private int getVolume() {
+	public int getVolume() {
 		return volumeProperty.get();
 	}
 

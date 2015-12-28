@@ -9,9 +9,9 @@ public interface Constants {
 	int LG_SEQ = 4 * 120 * 2;
 
 	/* Pattern */
-	public static final int PATTERN_MEASURE_BYTE = 1;
+	int PATTERN_QUARTERS_PER_BAR_BYTE = 1;
 	int INSTRUMENT_CHANNELS_PER_PATTERN = 15;
-	int SINGLE_PATTERN_LENGTH = PATTERN_MEASURE_BYTE + INSTRUMENT_CHANNELS_PER_PATTERN + 5;
+	int SINGLE_PATTERN_LENGTH = PATTERN_QUARTERS_PER_BAR_BYTE + INSTRUMENT_CHANNELS_PER_PATTERN + 5;
 
 	int VARIATIONS_PER_PATTERN = 4;
 	int FILL_INS_PER_PATTERN = 1;
@@ -20,7 +20,7 @@ public interface Constants {
 	int PATTERNS_COUNT = 8;
 
 	int ALL_PATTERNS_COUNT = PATTERNS_COUNT * ALL_VARIATIONS_PER_PATTERN;
-	int PATTERN_LENGTH = ALL_PATTERNS_COUNT * SINGLE_PATTERN_LENGTH;
+	int ALL_PATTERNS_LENGTH = ALL_PATTERNS_COUNT * SINGLE_PATTERN_LENGTH;
 
 	// TODO test if gap still present, or was bug from older parser.
 	// Length is 40, so this could match 5 variations * 8 patterns.

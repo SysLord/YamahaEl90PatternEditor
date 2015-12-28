@@ -10,12 +10,13 @@ import org.springframework.stereotype.Component;
 
 import parser.B00Parser;
 import parser.ParserMain;
+import parser.assembler.B00Assembler;
 import parser.dataobjects.B00Data;
+import parser.dataobjects.B00Pattern;
 import parser.dataobjects.BinaryData;
+import parser.util.ParserUtil;
 import util.LogUtil;
-
-import com.google.common.collect.Lists;
-
+import electone.dataobjects.Pattern;
 import electone.dataobjects.Patterns;
 
 @Component
@@ -23,7 +24,7 @@ public class ParserMainImpl implements ParserMain {
 
 	/**
 	 * Parser main, for tests. Logs results.
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -43,7 +44,8 @@ public class ParserMainImpl implements ParserMain {
 	@Override
 	public Patterns parsePatternsFromFile(String b00path) {
 		byte[] readFile = readFile(Paths.get(b00path));
-		BinaryData binaryData = toIntbasedBinaryData(readFile);
+		List<Integer> intbasedBinaryData = ParserUtil.toUnsignedInts(readFile);
+		BinaryData binaryData = new BinaryData(intbasedBinaryData).as("whole B00 File");
 
 		B00Parser parser = new B00Parser();
 		B00Data b00Data = parser.parse(binaryData);
@@ -60,13 +62,15 @@ public class ParserMainImpl implements ParserMain {
 		}
 	}
 
-	// Convert bytes to int. Java bytes seem kind of useless to work with for this job.
-	private BinaryData toIntbasedBinaryData(byte[] array) {
-		List<Integer> data = Lists.newArrayList();
-		for (byte b : array) {
-			data.add(Byte.toUnsignedInt(b));
-		}
-		BinaryData binaryData = new BinaryData(data);
-		return binaryData;
+	@Override
+	public byte[] patternsToB00(Pattern pattern) {
+		PatternConverter converter = new PatternConverter();
+
+		B00Pattern b00pattern = converter.fromPatternToB00(pattern);
+		B00Assembler assembler = new B00Assembler();
+
+		BinaryData b = assembler.assemble(b00pattern);
+
+		return ParserUtil.toSignedJavaBytes(b.getData());
 	}
 }
