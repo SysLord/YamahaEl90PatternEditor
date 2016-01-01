@@ -115,9 +115,9 @@ public class PatternParser {
 			}
 
 			int accent = (ChannelAndAccent & Constants.PATTERN_NOTE_ACCENT_MASK) >>> Constants.PATTERN_NOTE_ACCENT_SHIFT_RIGHT;
-			AssertUtil.assertValueRange(accent, 0, 7);
-			measure.addNote(channel, accent);
-			LogUtil.logDebug("@%d=%d(%d)", measure24s, channel, accent);
+		AssertUtil.assertValueRange(accent, 0, 7);
+		measure.addNote(channel, accent);
+		LogUtil.logDebug("@%d=%d(%d)", measure24s, channel, accent);
 		}
 
 		LogUtil.logTraceDump(measure, "measure");
@@ -152,7 +152,7 @@ public class PatternParser {
 
 			B00Pattern pattern = new B00Pattern(patternIdent, quarterTime, channelInstruments);
 			pattern.setOffsetMeasureBar1(offsetMeasure1);
-			pattern.setOffsetMeasureBar1(offsetMeasure2);
+			pattern.setOffsetMeasureBar2(offsetMeasure2);
 
 			patterns.add(pattern);
 		}
