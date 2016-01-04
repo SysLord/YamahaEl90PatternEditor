@@ -3,18 +3,19 @@ package de.syslord.electonePattern.Audio;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import util.LogUtil;
 import electone.constants.DrumInstrument;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternConstants;
 import electone.dataobjects.Volume;
+import util.LogUtil;
 
 public class Player {
 
-	private static final int MINUTE_SECONDS = 60;
+	private static final int OPENAL_MAX_AUDIO_SOURCES = 250;
 
-	/* TODO */
-	private static final boolean TRY_OPENAL = true;
+	private static final int MILLISECONDS_PER_SECOND = 1000;
+
+	private static final int MINUTE_SECONDS = 60;
 
 	private AudioSource audioSource;
 
@@ -31,12 +32,12 @@ public class Player {
 	}
 
 	public Player() {
-		boolean success = false;
-		if (TRY_OPENAL) {
-			success = createOpenAlAudioSource();
-		}
+		boolean openAlSuccessfull = createOpenAlAudioSource();
 
-		if (!success) {
+		if (!openAlSuccessfull) {
+			LogUtil.logWarn(
+					"====== OpenAl could not be initiated. Using javaFx AudioClip as fallback. It will sound awful. ======");
+
 			SoundLibrary soundLibrary = new AudioClipSoundLibrary();
 			audioSource = new AudioClipAudioSource();
 			audioSource.init(soundLibrary.getAudioFiles());
@@ -47,8 +48,7 @@ public class Player {
 		SoundLibrary soundLibrary;
 		try {
 			soundLibrary = new AudioClipSoundLibrary();
-			int maxParallelSources = 250;
-			audioSource = new GamingLibOpenAlAudioSource(maxParallelSources);
+			audioSource = new GamingLibOpenAlAudioSource(OPENAL_MAX_AUDIO_SOURCES);
 			audioSource.init(soundLibrary.getAudioFiles());
 			return true;
 		} catch (UnsatisfiedLinkError err) {
@@ -65,14 +65,14 @@ public class Player {
 		this.playing = false;
 	}
 
-	// TODO Bpm als property
+	// TODO Bpm as a property
 	public void start(int beatsPerMinute) {
 		if (playing) {
 			return;
 		}
 
 		this.playing = true;
-		final int pause = (1000 * MINUTE_SECONDS) / (beatsPerMinute * PatternConstants.QUARTER_QUANTIZATION);
+		final int pause = (MILLISECONDS_PER_SECOND * MINUTE_SECONDS) / (beatsPerMinute * PatternConstants.QUARTER_QUANTIZATION);
 		Thread thread = new Thread(new Runnable() {
 
 			@Override

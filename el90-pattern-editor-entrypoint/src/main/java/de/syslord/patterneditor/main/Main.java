@@ -1,4 +1,4 @@
-package de.yslord.patterneditor.main;
+package de.syslord.patterneditor.main;
 
 import javafx.application.Application;
 

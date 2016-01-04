@@ -14,12 +14,12 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
 
-import util.LogUtil;
-
 import com.google.common.collect.Maps;
 
 import electone.dataobjects.Instrument;
+import util.LogUtil;
 
+// TODO one should probably put a synchronize here and there
 public class GamingLibOpenAlAudioSource implements AudioSource {
 
 	public class AudioSourceException extends RuntimeException {
@@ -128,7 +128,6 @@ public class GamingLibOpenAlAudioSource implements AudioSource {
 		if (instrumentSourceIdentifiers != null) {
 			for (Integer sourceIdentifier : instrumentSourceIdentifiers) {
 				if (!isPlaying(sourceIdentifier)) {
-					// LogUtil.log("found free matching inst");
 					playSource(sourceIdentifier, volume);
 					onErrorThrow();
 					return;

@@ -7,6 +7,17 @@
 	<packaging>pom</packaging>
 
 
+	<repositories>
+		<repository>
+			<id>mavenNatives</id>
+			<name>Maven Natives Repository</name>
+			<url>http://mavennatives.googlecode.com/svn/repo</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
