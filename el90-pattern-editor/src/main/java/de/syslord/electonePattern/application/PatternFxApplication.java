@@ -16,9 +16,7 @@ import javafx.stage.Stage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import parser.ParserMain;
-import util.LogUtil;
-import de.syslord.electonePattern.Audio.Player;
+import de.syslord.electonePattern.Audio.AudioPlayer;
 import de.syslord.electonePattern.fxui.PatternControl;
 import de.syslord.electonePattern.spring.AppContextHelper;
 import de.syslord.electonePattern.util.IntStreamUtil;
@@ -26,20 +24,26 @@ import electone.constants.PatternVariation;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternIdent;
 import electone.dataobjects.Patterns;
+import parser.ParserMain;
+import util.LogUtil;
 
 public class PatternFxApplication extends Application {
 
-	private Player player;
+	private AudioPlayer player;
 	private PatternControl patternControl;
 
 	@Override
 	public void start(Stage primaryStage) {
 
-		// String path = "C:\\JEEworkspace\\RHY_MDR_00.B00";
-		String path = "C:\\JEEworkspace\\SCRUBS_UND_JAZZ_0-AFILL_1-AFILL_MDR_03.B00";
-		Pattern pattern = parsePatternsAndChooseOne(path);
+		//////////////
 
-		player = new Player();
+		String path = "../exampleB00File/EXAMPLE__0A-0FILL__1A-1FILL__MDR_03.B00";
+		Patterns patterns = parsePatternsAndChooseOne(path);
+		Pattern pattern = patterns.get(PatternIdent.of(1, PatternVariation.A));
+
+		//////////////
+
+		player = new AudioPlayer();
 		player.setPositionListener(pos -> handlePos(pos));
 		player.setModel(pattern);
 
@@ -63,6 +67,7 @@ public class PatternFxApplication extends Application {
 	@Override
 	public void stop() throws Exception {
 		player.stop();
+		player.close();
 		super.stop();
 	}
 
@@ -91,16 +96,11 @@ public class PatternFxApplication extends Application {
 		mainLayout.setTop(new HBox(play, stop, speed));
 	}
 
-	private Pattern parsePatternsAndChooseOne(String path) {
+	private Patterns parsePatternsAndChooseOne(String path) {
 		ParserMain parserMain = AppContextHelper.getBean(ParserMain.class);
 		Patterns patterns = parserMain.parsePatternsFromFile(path);
 
 		LogUtil.logDump(patterns.getAvailablePatterns(), "availble patterns");
-
-		// Pattern orElse = patterns.get(PatternIdent.of(0, PatternVariation.FILL_IN));
-		Pattern orElse = patterns.get(PatternIdent.of(1, PatternVariation.A));
-		// Pattern orElse = patterns.get(PatternIdent.of(5, PatternVariation.A));
-
-		return orElse;
+		return patterns;
 	}
 }

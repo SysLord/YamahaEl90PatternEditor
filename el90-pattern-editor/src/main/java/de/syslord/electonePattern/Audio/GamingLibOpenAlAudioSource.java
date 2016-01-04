@@ -240,10 +240,15 @@ public class GamingLibOpenAlAudioSource implements AudioSource {
 		}
 	}
 
-	public void cleanUp() {
+	private void cleanUp() {
 		AL10.alDeleteSources(source);
 		AL10.alDeleteBuffers(buffer);
 		AL.destroy();
+	}
+
+	@Override
+	public void close() {
+		cleanUp();
 	}
 
 }

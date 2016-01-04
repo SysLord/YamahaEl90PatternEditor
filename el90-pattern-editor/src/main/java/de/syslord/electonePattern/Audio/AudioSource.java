@@ -10,4 +10,6 @@ public interface AudioSource {
 
 	void play(Instrument instrument, float relativeVolume);
 
+	void close();
+
 }

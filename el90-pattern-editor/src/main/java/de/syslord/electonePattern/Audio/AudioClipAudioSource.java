@@ -5,8 +5,8 @@ import javafx.scene.media.AudioClip;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.LogUtil;
 import electone.dataobjects.Instrument;
+import util.LogUtil;
 
 public class AudioClipAudioSource implements AudioSource {
 
@@ -15,7 +15,7 @@ public class AudioClipAudioSource implements AudioSource {
 	@Override
 	public void init(Map<Instrument, String> audioFiles) {
 		audioFiles.entrySet().stream()
-		.forEach(entry -> createClip(entry.getKey(), entry.getValue()));
+				.forEach(entry -> createClip(entry.getKey(), entry.getValue()));
 
 		LogUtil.log("%d audio files loaded.", clipMap.size());
 	}
@@ -29,6 +29,11 @@ public class AudioClipAudioSource implements AudioSource {
 	@Override
 	public void play(Instrument instrument, float volume) {
 		clipMap.get(instrument).play(volume);
+	}
+
+	@Override
+	public void close() {
+		//
 	}
 
 }

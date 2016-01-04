@@ -9,7 +9,7 @@ import electone.dataobjects.PatternConstants;
 import electone.dataobjects.Volume;
 import util.LogUtil;
 
-public class Player {
+public class AudioPlayer {
 
 	private static final int OPENAL_MAX_AUDIO_SOURCES = 250;
 
@@ -31,28 +31,30 @@ public class Player {
 
 	}
 
-	public Player() {
+	public AudioPlayer() {
 		boolean openAlSuccessfull = createOpenAlAudioSource();
 
 		if (!openAlSuccessfull) {
 			LogUtil.logWarn(
 					"====== OpenAl could not be initiated. Using javaFx AudioClip as fallback. It will sound awful. ======");
 
-			SoundLibrary soundLibrary = new AudioClipSoundLibrary();
+			AudioClipSoundLibrary audioClipSoundLibrary = new AudioClipSoundLibrary();
 			audioSource = new AudioClipAudioSource();
-			audioSource.init(soundLibrary.getAudioFiles());
+			audioSource.init(audioClipSoundLibrary.getAudioFiles());
 		}
 	}
 
 	private boolean createOpenAlAudioSource() {
-		SoundLibrary soundLibrary;
 		try {
-			soundLibrary = new AudioClipSoundLibrary();
+			OpenAlSoundLibrary openAlSoundLibrary = new OpenAlSoundLibrary();
 			audioSource = new GamingLibOpenAlAudioSource(OPENAL_MAX_AUDIO_SOURCES);
-			audioSource.init(soundLibrary.getAudioFiles());
+			audioSource.init(openAlSoundLibrary.getAudioFiles());
+
+			LogUtil.log("===== OpenAl initialization successful. Realtime sound possible. =====");
+
 			return true;
 		} catch (UnsatisfiedLinkError err) {
-			LogUtil.log("Failed to create OpenAl audio\n%s", err);
+			LogUtil.log("Failed to create OpenAl audio. Native libraries are missing.\n%s", err);
 			return false;
 		}
 	}
@@ -72,7 +74,8 @@ public class Player {
 		}
 
 		this.playing = true;
-		final int pause = (MILLISECONDS_PER_SECOND * MINUTE_SECONDS) / (beatsPerMinute * PatternConstants.QUARTER_QUANTIZATION);
+		final int pause = (MILLISECONDS_PER_SECOND * MINUTE_SECONDS)
+				/ (beatsPerMinute * PatternConstants.QUARTER_QUANTIZATION);
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
@@ -128,5 +131,9 @@ public class Player {
 
 	public void setPositionListener(PlayerPositionListener listener) {
 		this.listener = listener;
+	}
+
+	public void close() {
+		audioSource.close();
 	}
 }
