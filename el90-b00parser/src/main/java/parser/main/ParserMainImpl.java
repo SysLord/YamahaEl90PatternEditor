@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import electone.dataobjects.Pattern;
+import electone.dataobjects.Patterns;
 import parser.B00Parser;
 import parser.ParserMain;
 import parser.assembler.B00Assembler;
@@ -16,8 +18,6 @@ import parser.dataobjects.B00Pattern;
 import parser.dataobjects.BinaryData;
 import parser.util.ParserUtil;
 import util.LogUtil;
-import electone.dataobjects.Pattern;
-import electone.dataobjects.Patterns;
 
 @Component
 public class ParserMainImpl implements ParserMain {
@@ -69,8 +69,9 @@ public class ParserMainImpl implements ParserMain {
 		B00Pattern b00pattern = converter.fromPatternToB00(pattern);
 		B00Assembler assembler = new B00Assembler();
 
-		BinaryData b = assembler.assemble(b00pattern);
+		// BinaryData b = assembler.assemble(b00pattern);
 
-		return ParserUtil.toSignedJavaBytes(b.getData());
+		// return ParserUtil.toSignedJavaBytes(b.getData());
+		return null;
 	}
 }

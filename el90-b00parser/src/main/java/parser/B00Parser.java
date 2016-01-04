@@ -3,8 +3,9 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import electone.constants.ElectoneModel;
 import parser.constants.BlockKind;
-import parser.constants.Constants;
+import parser.constants.ByteConstants;
 import parser.constants.DataKind;
 import parser.constants.ElectoneChecksumHelper;
 import parser.dataobjects.B00Data;
@@ -13,7 +14,6 @@ import parser.dataobjects.BinaryData;
 import parser.dataobjects.BlockAndRemaining;
 import parser.util.ParserUtil;
 import util.LogUtil;
-import electone.constants.ElectoneModel;
 
 public class B00Parser {
 
@@ -54,7 +54,7 @@ public class B00Parser {
 		B00Data b00data = new B00Data();
 
 		bulkDumpBlocks
-		.forEach(bulkDumpBlock -> parseBlocks(bulkDumpBlock, b00data));
+				.forEach(bulkDumpBlock -> parseBlocks(bulkDumpBlock, b00data));
 
 		return b00data;
 	}
@@ -78,12 +78,12 @@ public class B00Parser {
 	}
 
 	private BlockAndRemaining handleBulkdump(BinaryData bulkDumpBlock) {
-		BinaryData head = bulkDumpBlock.getHead(Constants.BULK_DUMP_BLOCK_HEADER_LENGTH).as(
+		BinaryData head = bulkDumpBlock.getHead(ByteConstants.BULK_DUMP_BLOCK_HEADER_LENGTH).as(
 				"bulk dump inner block header");
 		assertBulkdumpBlockHeader(head);
 		int blockLength = getBlockLengthFromblockHeader(head);
 
-		BinaryData remainingData = bulkDumpBlock.getTail(Constants.BULK_DUMP_BLOCK_HEADER_LENGTH).as(
+		BinaryData remainingData = bulkDumpBlock.getTail(ByteConstants.BULK_DUMP_BLOCK_HEADER_LENGTH).as(
 				"bulk dump block tail also following blocks");
 
 		BinaryData blockData = remainingData.getHead(blockLength).as("bulk dump inner block");

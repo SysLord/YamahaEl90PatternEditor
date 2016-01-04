@@ -2,12 +2,6 @@ package parser.constants;
 
 public interface Constants {
 
-	int LG_REGC = 0xCD;
-	int LG_REG = 0xCA;
-	int LG_VOI = 0x1CC;
-	int LG_FLU = 8 * 8 + 0x40 + 8 * 8 + 0x40;
-	int LG_SEQ = 4 * 120 * 2;
-
 	/* Pattern */
 	int PATTERN_QUARTERS_PER_BAR_BYTE = 1;
 	int INSTRUMENT_CHANNELS_PER_PATTERN = 15;
@@ -38,7 +32,5 @@ public interface Constants {
 	int PATTERN_NOTE_CHANNEL_MASK = 0b00001111;
 
 	/*  */
-
-	int BULK_DUMP_BLOCK_HEADER_LENGTH = 6;
 
 }
