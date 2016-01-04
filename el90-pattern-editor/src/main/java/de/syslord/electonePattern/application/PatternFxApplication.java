@@ -39,7 +39,8 @@ public class PatternFxApplication extends Application {
 		String path = "C:\\JEEworkspace\\SCRUBS_UND_JAZZ_0-AFILL_1-AFILL_MDR_03.B00";
 		Pattern pattern = parsePatternsAndChooseOne(path);
 
-		player = new Player(pos -> handlePos(pos));
+		player = new Player();
+		player.setPositionListener(pos -> handlePos(pos));
 		player.setModel(pattern);
 
 		createStage(primaryStage);

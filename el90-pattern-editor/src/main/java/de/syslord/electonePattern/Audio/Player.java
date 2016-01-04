@@ -3,6 +3,7 @@ package de.syslord.electonePattern.Audio;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import util.LogUtil;
 import electone.constants.DrumInstrument;
 import electone.dataobjects.Pattern;
 import electone.dataobjects.PatternConstants;
@@ -11,6 +12,9 @@ import electone.dataobjects.Volume;
 public class Player {
 
 	private static final int MINUTE_SECONDS = 60;
+
+	/* TODO */
+	private static final boolean TRY_OPENAL = true;
 
 	private AudioSource audioSource;
 
@@ -26,10 +30,31 @@ public class Player {
 
 	}
 
-	public Player(PlayerPositionListener listener) {
-		this.listener = listener;
-		audioSource = new AudioSource();
-		audioSource.init(SoundLibrary.getAudioFiles());
+	public Player() {
+		boolean success = false;
+		if (TRY_OPENAL) {
+			success = createOpenAlAudioSource();
+		}
+
+		if (!success) {
+			SoundLibrary soundLibrary = new AudioClipSoundLibrary();
+			audioSource = new AudioClipAudioSource();
+			audioSource.init(soundLibrary.getAudioFiles());
+		}
+	}
+
+	private boolean createOpenAlAudioSource() {
+		SoundLibrary soundLibrary;
+		try {
+			soundLibrary = new AudioClipSoundLibrary();
+			int maxParallelSources = 250;
+			audioSource = new GamingLibOpenAlAudioSource(maxParallelSources);
+			audioSource.init(soundLibrary.getAudioFiles());
+			return true;
+		} catch (UnsatisfiedLinkError err) {
+			LogUtil.log("Failed to create OpenAl audio\n%s", err);
+			return false;
+		}
 	}
 
 	public void setModel(Pattern model) {
@@ -68,7 +93,9 @@ public class Player {
 
 	private void playPattern(final int pause) {
 		for (int position = 0; position < PatternConstants.TRACK_QUANTIZATION; position++) {
-			listener.updatePosition(position);
+			if (listener != null) {
+				listener.updatePosition(position);
+			}
 			playCount(position);
 
 			if (!playing) {
@@ -97,5 +124,9 @@ public class Player {
 
 	public AudioSource getAudioSource() {
 		return audioSource;
+	}
+
+	public void setPositionListener(PlayerPositionListener listener) {
+		this.listener = listener;
 	}
 }
